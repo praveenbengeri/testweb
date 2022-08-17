@@ -11,12 +11,12 @@
   function success(pos) {
     const crd = pos.coords;
     const divMsg = document.getElementById("divMsg");
-    divMsg.innerHTML = 'Your current position is: Latitude : ${crd.latitude} Longitude: ${crd.longitude} More or less ${crd.accuracy} meters.`);
+    divMsg.innerHTML = 'Your current position is: Latitude : ${crd.latitude} Longitude: ${crd.longitude} More or less ${crd.accuracy} meters.`;
   }
 
   function error(err) {
     //console.warn(`ERROR(${err.code}): ${err.message}`);
-    divMsg.innerHTML = `<span style='color:red'>ERROR(${err.code}): ${err.message}</span>`
+    divMsg.innerHTML = `<span style='color:red'>ERROR(${err.code}): ${err.message}</span>`;
   }
 
   function onLoad() {
