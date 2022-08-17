@@ -27,7 +27,7 @@
     
     
     Office.onReady((info) => {
-      console.log(navigator.location.url);
+      console.log(window.location.href);
       navigator.geolocation.getCurrentPosition(success, error, options);
     });
   </script>
