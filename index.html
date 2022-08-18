@@ -1,7 +1,45 @@
 <html>
-<head></head>
-<body style="margin: 0; padding: 0; overflow:hidden; -ms-content-zooming: none;">
-    Changed!10:08 AM 8/18/2022
+<head>
+  <!--
+      <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  -->
+  <script lang="javascript">
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    };
+
+    function success(pos) {
+      const crd = pos.coords;
+      const divMsg = document.getElementById("divMsg");
+      divMsg.innerHTML = `Your current position is: Latitude : ${crd.latitude} Longitude: ${crd.longitude} More or less ${crd.accuracy} meters.`;
+    }
+
+    function error(err) {
+      //console.warn(`ERROR(${err.code}): ${err.message}`);
+      divMsg.innerHTML = `<span style='color:red'>ERROR(${err.code}): ${err.message}</span>`;
+    }
+
+    function onLoad() {
+      console.log(window.location.href);
+      navigator.geolocation.getCurrentPosition(success, error, options);
+    }
+    
+    /*
+    Office.onReady((info) => {
+      console.log(window.location.href);
+      navigator.geolocation.getCurrentPosition(success, error, options);
+    });
+    */
+  </script>
+</head>
+
+<body onload="onLoad()" style="margin: 0; padding: 0; overflow:hidden; -ms-content-zooming: none;">
+    Changed!11:00 AM 8/18/2022
+    <br/>
+    <div id="divMsg"></div> 
     <br/>
     <div id="WopiDocWACContainer">
         <iframe name="WebApplicationFrame" id="WebApplicationFrame" src="https://ashy-plant-03be47a10.1.azurestaticapps.net/outer.html" title="Office Online Frame" 
