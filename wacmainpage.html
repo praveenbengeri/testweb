@@ -1,0 +1,53 @@
+<html>
+<head>
+  <!--
+      <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  -->
+  <script lang="javascript">
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    };
+
+    function success(pos) {
+      const crd = pos.coords;
+      const divMsg = document.getElementById("divMsg");
+      divMsg.innerHTML = `Location: ${window.location.href}. <br/>Your current position is: Latitude : ${crd.latitude} Longitude: ${crd.longitude} More or less ${crd.accuracy} meters.`;
+    }
+
+    function error(err) {
+      //console.warn(`ERROR(${err.code}): ${err.message}`);
+      const divMsg = document.getElementById("divMsg");
+      divMsg.innerHTML = `Location: ${window.location.href}. <br/><span style='color:red'>ERROR(${err.code}): ${err.message}</span>`;
+    }
+
+    function onLoad() {
+      console.log(window.location.href);
+      navigator.geolocation.getCurrentPosition(success, error, options);
+    }
+    
+    /*
+    Office.onReady((info) => {
+      console.log(window.location.href);
+      navigator.geolocation.getCurrentPosition(success, error, options);
+    });
+    */
+  </script>
+</head>
+
+<body onload="onLoad()" style="margin: 0; padding: 0; overflow:hidden; -ms-content-zooming: none;">
+    WAC Main page. Embeds WAC Frame with geolocation allow not mentioned!
+    <br/>
+    <div id="divMsg"></div> 
+    <br/>
+    <div id="WopiDocWACContainer">
+        <iframe name="WebApplicationFrame" id="WebApplicationFrame" src="https://github.com/praveenbengeri/testweb/webappframe.html" title="Office Online Frame" 
+                width="1024px" height="768px"
+                allow="geolocation; microphone https://excel.officeapps.live.com; autoplay https://excel.officeapps.live.com; camera https://excel.officeapps.live.com; clipboard-read https://excel.officeapps.live.com; clipboard-write https://excel.officeapps.live.com; keyboard-map https://excel.officeapps.live.com;"
+                >
+        </iframe>
+        <!--allow="geolocation *;" -->
+</body>
+</html>
