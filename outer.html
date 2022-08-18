@@ -2,7 +2,9 @@
 <head></head>
   
 <head>
-  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <--
+      <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  -->
   <script lang="javascript">
 
     const options = {
@@ -27,11 +29,12 @@
       navigator.geolocation.getCurrentPosition(success, error, options);
     }
     
-    
+    /*
     Office.onReady((info) => {
       console.log(window.location.href);
       navigator.geolocation.getCurrentPosition(success, error, options);
     });
+    */
   </script>
 </head>
 <body>
