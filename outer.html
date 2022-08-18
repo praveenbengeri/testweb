@@ -21,7 +21,8 @@
 
     function error(err) {
       //console.warn(`ERROR(${err.code}): ${err.message}`);
-      divMsg.innerHTML = `<span style='color:red'>ERROR(${err.code}): ${err.message}</span>`;
+      const divMsg = document.getElementById("divMsg");
+      divMsg.innerHTML = `Location: ${window.location.href}. <br/><span style='color:red'>ERROR(${err.code}): ${err.message}</span>`;
     }
 
     function onLoad() {
