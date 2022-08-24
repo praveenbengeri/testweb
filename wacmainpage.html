@@ -31,7 +31,9 @@
       //appFrame.contentDocument.close();
       //divApp.innerHTML = '<iframe name="AgaveFrame" id="AgaveFrame" src="https://ashy-plant-03be47a10.1.azurestaticapps.net/addin.html" width="800px" height="600px" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-storage-access-by-user-activation" allow="geolocation">';
       divApp.innerHTML = '<iframe name="WebApplicationFrame" id="WebApplicationFrame" title="Office Online Frame" width="1024px" height="768px" allow="microphone https://github.com/praveenbengeri/testweb; autoplay https://github.com/praveenbengeri/testweb; camera https://github.com/praveenbengeri/testweb; clipboard-read https://github.com/praveenbengeri/testweb; clipboard-write https://github.com/praveenbengeri/testweb; keyboard-map https://github.com/praveenbengeri/testweb;">        </iframe>';
-      
+      const appFrame = document.getElementById("WebApplicationFrame");
+      appFrame.contentDocument.write('<iframe name="AgaveFrame" id="AgaveFrame" src="https://ashy-plant-03be47a10.1.azurestaticapps.net/addin.html" width="800px" height="600px" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-storage-access-by-user-activation" allow="geolocation">');
+      appFrame.contentDocument.close();
       
       //navigator.geolocation.getCurrentPosition(success, error, options);
     }
