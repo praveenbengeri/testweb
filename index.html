@@ -4,7 +4,124 @@
       <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   -->
   <script lang="javascript">
-
+    $("#GetFileContent").click(() => tryCatch(GetFileContent));
+    $("#LoadDocumentFromBase64").click(() => tryCatch(LoadDocumentFromBase64));
+    $("#InsertFileFromBase64").click(() => tryCatch(InsertFileFromBase64));
+    function InsertFileFromBase64() {
+      Word.run(function(context) {
+        var docbase64Data: string = $("#base64FileContent")
+          .val()
+          .toString();
+        // Queue a command to get the current selection and then
+        // create a proxy range object with the results.
+        var range = context.document.getSelection();
+        // Queue a command to insert base64 encoded .docx at the beginning of the range.
+        // You'll need to implement getBase64() to make this work.
+        range.insertFileFromBase64(docbase64Data, Word.InsertLocation.start);
+        // Synchronize the document state by executing the queued commands,
+        // and return a promise to indicate task completion.
+        return context.sync().then(function() {
+          console.log("Added base64 encoded text to the beginning of the range.");
+        });
+      }).catch(function(error) {
+        console.log("Error: " + JSON.stringify(error));
+        if (error instanceof OfficeExtension.Error) {
+          console.log("Debug info: " + JSON.stringify(error.debugInfo));
+        }
+      });
+    }
+    function GetFileContent() {
+      Office.context.document.getFileAsync(Office.FileType.Compressed, { sliceSize: 65536 /*64 KB*/ }, function(result) {
+        if (result.status == Office.AsyncResultStatus.Succeeded) {
+          // If the getFileAsync call succeeded, then
+          // result.value will return a valid File Object.
+          var myFile = result.value;
+          var sliceCount = myFile.sliceCount;
+          var slicesReceived = 0,
+            gotAllSlices = true,
+            docdataSlices = [];
+          console.log("File size:" + myFile.size + " #Slices: " + sliceCount);
+          // Get the file slices.
+          getSliceAsync(myFile, 0, sliceCount, gotAllSlices, docdataSlices, slicesReceived);
+        } else {
+          console.log("getDocumentAsCompressed start3");
+          console.log("Error:", result.error.message);
+        }
+      });
+    }
+    function getSliceAsync(file, nextSlice, sliceCount, gotAllSlices,
+    docdataSlices, slicesReceived) {
+      file.getSliceAsync(nextSlice, function(sliceResult) {
+        if (sliceResult.status == "succeeded") {
+          if (!gotAllSlices) {
+            // Failed to get all slices, no need to continue.
+            return;
+          }
+          // Got one slice, store it in a temporary array.
+          // (Or you can do something else, such as
+          // send it to a third-party server.)
+          docdataSlices[sliceResult.value.index] = sliceResult.value.data;
+          if (++slicesReceived == sliceCount) {
+            // All slices have been received.
+            file.closeAsync();
+            onGotAllSlices(docdataSlices);
+          } else {
+            getSliceAsync(file, ++nextSlice, sliceCount, gotAllSlices, docdataSlices, slicesReceived);
+          }
+        } else {
+          gotAllSlices = false;
+          file.closeAsync();
+          console.log("getSliceAsync Error:", sliceResult.error.message);
+        }
+      });
+    }
+    function onGotAllSlices(docdataSlices) {
+      var docdata = [];
+      for (var i = 0; i < docdataSlices.length; i++) {
+        docdata = docdata.concat(docdataSlices[i]);
+      }
+      console.log("We've got all slices!");
+      var fileContent = new String();
+      for (var j = 0; j < docdata.length; j++) {
+        fileContent += String.fromCharCode(docdata[j]);
+      }
+      var docbase64Data = window.btoa(fileContent.toString());
+      $("#binaryContent").val(fileContent.toString());
+      $("#base64FileContent").val(docbase64Data);
+    }
+    function LoadDocumentFromBase64() {
+      Word.run(function(context) {
+        OfficeExtension.config.extendedErrorLogging = true;
+        var docbase64Data: string = $("#base64FileContent")
+          .val()
+          .toString();
+        //console.log(docbase64Data);
+        if (docbase64Data.length > 0) {
+          var myNewDoc = context.application.createDocument(docbase64Data);
+          myNewDoc.open();
+          return context
+            .sync()
+            .then(function() {
+              console.log("worked!");
+            })
+            .catch(function(e) {
+              console.log(e);
+            });
+        } else {
+          console.log("Invalid base64 content!");
+        }
+      }).catch();
+    }
+    /** Default helper for invoking an action and handling errors. */
+    function tryCatch(callback) {
+      Promise.resolve()
+        .then(callback)
+        .catch(function(error) {
+          OfficeHelpers.UI.notify(error);
+          OfficeHelpers.Utilities.log(error);
+        });
+    }
+    
     const options = {
       enableHighAccuracy: true,
       timeout: 5000,
@@ -37,17 +154,30 @@
   </script>
 </head>
 
-<body onload="onLoad()" style="margin: 0; padding: 0; overflow:hidden; -ms-content-zooming: none;">
-    WAC Main page. Embeds WAC Frame with geolocation allow not mentioned!
+ 
+  language: typescript
+template:
+  content: >-
+    <p class="ms-font-m">This sample demonstrates getting document content, and
+    using this content to open a new document!
+    </p>
     <br/>
-    <div id="divMsg"></div> 
+    <button id="GetFileContent" class="ms-Button">
+        <span class="ms-Button-label">GetFileContent</span>
+    </button>
+    <button id="InsertFileFromBase64" class="ms-Button">
+        <span class="ms-Button-label">InsertFileFromBase64</span>
+    </button>
+    <button id="LoadDocumentFromBase64" class="ms-Button">
+        <span class="ms-Button-label">createDocument</span>
+    </button>
     <br/>
-    <div id="WopiDocWACContainer">
-        <iframe name="WebApplicationFrame" id="WebApplicationFrame" src="https://ashy-plant-03be47a10.1.azurestaticapps.net/outer.html" title="Office Online Frame" 
-                width="1024px" height="768px"
-                allow="geolocation; microphone https://excel.officeapps.live.com; autoplay https://excel.officeapps.live.com; camera https://excel.officeapps.live.com; clipboard-read https://excel.officeapps.live.com; clipboard-write https://excel.officeapps.live.com; keyboard-map https://excel.officeapps.live.com;"
-                >
-        </iframe>
-        <!--allow="geolocation *;" -->
-</body>
+    <span class="ms-font-m">Base64 file content:</span>
+    <br/>
+    <textarea id="base64FileContent" rows="20" cols="50">
+    </textarea>
+    <!--<br/>
+    <textarea id="binaryContent" rows="20" cols="50">
+    </textarea>-->
+    <br/>
 </html>
